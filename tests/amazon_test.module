@@ -6,7 +6,7 @@
  */
 
 /**
- * Implements hook_install();
+ * Implements hook_install();().
  */
 function amazon_test_install() {
   // Pre-populate the db.
@@ -37,9 +37,9 @@ function amazon_test_templates_page_callback() {
   $styles = array_keys(amazon_theme());
   foreach ($styles as $style) {
     $markup .= $style . theme('amazon_item', array(
-        'item' => $items[0],
-        'style' => str_replace('amazon_item__', '', $style),
-      ));
+      'item' => $items[0],
+      'style' => str_replace('amazon_item__', '', $style),
+    ));
   }
 
   return $markup;
@@ -49,7 +49,7 @@ function amazon_test_templates_page_callback() {
  * Provides an Amazon item for testing.
  */
 function amazon_test_get_amazon_items() {
-  $source = drupal_get_path('module', 'amazon_test') . '/amazon_test.json';
+  $source = backdrop_get_path('module', 'amazon_test') . '/amazon_test.json';
   $json = file_get_contents($source);
 
   return json_decode($json, TRUE);
@@ -75,12 +75,12 @@ function _amazon_test_attach_fields() {
       $field_instance = $field_instances['node-article-field_asin'];
 
       if (!field_create_instance($field_instance)) {
-        drupal_set_message(
+        backdrop_set_message(
           t('Error creating :label on :bundle.',
             array(
-              ':label' => $field_instance['label'],
-              ':bundle' => 'article'
-            )
+          ':label' => $field_instance['label'],
+          ':bundle' => 'article',
+        )
           ), 'error'
         );
       }

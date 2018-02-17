@@ -12,26 +12,26 @@ function amazon_similar_schema() {
   $schema['amazon_similar'] = array(
     'fields' => array(
       'asin' => array(
-        'type'     => 'varchar',
-        'length'   => 64,
+        'type' => 'varchar',
+        'length' => 64,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'item' => array(
-        'type'     => 'varchar',
-        'length'   => 64,
+        'type' => 'varchar',
+        'length' => 64,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'title' => array(
-        'type'     => 'varchar',
-        'length'   => 255,
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'delta' => array(
-        'type'     => 'int',
-        'default'  => 0,
+        'type' => 'int',
+        'default' => 0,
         'not null' => TRUE,
         'unsigned' => TRUE,
       ),

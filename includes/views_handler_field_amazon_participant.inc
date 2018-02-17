@@ -3,7 +3,10 @@
 class views_handler_field_amazon_participant extends views_handler_field_prerender_list {
   function construct() {
     parent::construct();
-    $this->additional_fields['asin'] = array('table' => 'amazon_item', 'field' => 'asin');
+    $this->additional_fields['asin'] = array(
+      'table' => 'amazon_item',
+      'field' => 'asin',
+    );
   }
 
   function option_definition() {
@@ -48,7 +51,7 @@ class views_handler_field_amazon_participant extends views_handler_field_prerend
       }
     }
 
-    if($asins) {
+    if ($asins) {
       $query = db_select('amazon_item_participant', 'aip')
         ->condition('asin', $asins, 'IN');
 
@@ -62,7 +65,7 @@ class views_handler_field_amazon_participant extends views_handler_field_prerend
       while ($record = $results->fetchAssoc()) {
         $this->items[$record['asin']][] = array(
           'participant' => check_plain($record['participant']),
-          'type' => check_plain($record['type'])
+          'type' => check_plain($record['type']),
         );
       }
     }

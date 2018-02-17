@@ -3,4 +3,6 @@ name = Amazon Components
 description = A Collection of Amazon Module Components - Gallery, Cart, Product Details, etc...
 package = Amazon
 dependencies[] = amazon
-core = 7.x
+backdrop = 1.x
+type = module
+

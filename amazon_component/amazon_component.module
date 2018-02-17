@@ -3,19 +3,19 @@
 module_load_include('inc', 'amazon_component', 'amazon_component.preprocess');
 
 /**
- * Implementation of hook_permission
+ * Implements hook_permission().
  */
 function amazon_component_permission() {
   return array(
-    'administer amazon component' =>  array(
+    'administer amazon component' => array(
       'title' => t('Administer Amazon Component module'),
       'description' => t('Manage and arrange Amazon Components.'),
-  ),
+    ),
   );
 }
 
 /**
- * Implements hook_block_info.
+ * Implements hook_block_info().
  */
 function amazon_component_block_info() {
   $blocks['amazon_component_gallery']['info'] = t('Amazon Component :: Gallery');
@@ -26,7 +26,7 @@ function amazon_component_block_info() {
 }
 
 /**
- * Implements hook_block_view.
+ * Implements hook_block_view().
  */
 function amazon_component_block_view($delta) {
   $block = array();
@@ -47,60 +47,71 @@ function amazon_component_block_view($delta) {
       $block['subject'] = t("Reviews");
       $block['content'] = theme('amazon_component_reviews');
       break;
-    return $block;
+      return $block;
   }
   return $block;
 }
 
 /**
- * Implements hook_block_configure.
+ * Implements hook_config_info().
+ */
+function amazon_component_config_info() {
+  $prefixes['amazon_component.settings'] = array(
+    'label' => t('Module name settings'),
+    'group' => t('Configuration'),
+  );
+}
+
+/**
+ * Implements hook_block_configure().
  */
 function amazon_component_block_configure($delta) {
+  $config = config('amazon_component.settings');
   switch ($delta) {
     case 'amazon_gallery':
       $form = array();
       $form['amazon_store_search_block_keywords_width'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Maximum Amount of Gallery Images'),
-            '#size' => 5,
-            '#default_value' => variable_get("amazon_component['gallery']",    5),
-          );
+        '#type' => 'textfield',
+        '#title' => t('Maximum Amount of Gallery Images'),
+        '#size' => 5,
+        '#default_value' => $config->get("amazon_component['gallery']"),
+      );
       return $form;
     case 'amazon_component_cart':
       $form = array();
       $form['amazon_component_cart_style'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Style'),
-            '#size' => 5,
-            '#default_value' => variable_get("amazon_component['cart']", ''),
-          );
+        '#type' => 'textfield',
+        '#title' => t('Style'),
+        '#size' => 5,
+        '#default_value' => $config->get("amazon_component['cart']"),
+      );
       return $form;
     case 'amazon_component_reviews':
       $form = array();
       $form['amazon_component_reviews_style'] = array(
-            '#type' => 'textfield',
-            '#title' => t('Style'),
-            '#size' => 15,
-            '#default_value' => variable_get("amazon_component['reviews_style']", ''),
-          );
+        '#type' => 'textfield',
+        '#title' => t('Style'),
+        '#size' => 15,
+        '#default_value' => $config->get("amazon_component['reviews_style']"),
+      );
       return $form;
   }
 }
 
 /**
- * Implements hook_block_save.
+ * Implements hook_block_save().
  */
 function amazon_component_block_save($delta, $edit) {
   switch ($delta) {
     case 'amazon_gallery':
-      variable_set("amazon_component_gallery", $edit["amazon_component_gallery"]);
-      break;;
+      config_set('amazon_component.settings', "amazon_component_gallery", $edit["amazon_component_gallery"]);
+      break;
     case 'amazon_component_cart':
-      variable_set("amazon_component_cart", $edit["amazon_component_cart"]);
-      break;;
+      config_set('amazon_component.settings', "amazon_component_cart", $edit["amazon_component_cart"]);
+      break;
     case 'amazon_component_reviews':
-      variable_set("amazon_component_reviews_style", $edit["amazon_component_reviews_style"]);
-      break;;
+      config_set('amazon_component.settings', "amazon_component_reviews_style", $edit["amazon_component_reviews_style"]);
+      break;
   }
   return;
 }
@@ -114,22 +125,22 @@ function amazon_component_theme() {
       'variables' => array('results' => NULL),
       'template' => 'amazon_component_gallery',
       //'preprocess functions' => array('amazon_component_theme_gallery'),
-      'path' => drupal_get_path('module', 'amazon_component') .'/templates',
+      'path' => backdrop_get_path('module', 'amazon_component') . '/templates',
     ),
     'amazon_component_cart' => array(
-      'variables' => array('cart' => NULL,),
+      'variables' => array('cart' => NULL),
       'template' => 'amazon_component_cart',
-      'path' => drupal_get_path('module', 'amazon_component') .'/templates',
+      'path' => backdrop_get_path('module', 'amazon_component') . '/templates',
     ),
     'amazon_component_add_to_cart' => array(
-      'variables' => array('cart' => NULL,),
+      'variables' => array('cart' => NULL),
       'template' => 'amazon_component_add_to_cart',
-      'path' => drupal_get_path('module', 'amazon_component') .'/templates',
+      'path' => backdrop_get_path('module', 'amazon_component') . '/templates',
     ),
     'amazon_component_reviews' => array(
-      'variables' => array('cart' => NULL,),
+      'variables' => array('cart' => NULL),
       'template' => 'amazon_component_reviews',
-      'path' => drupal_get_path('module', 'amazon_component') .'/templates',
+      'path' => backdrop_get_path('module', 'amazon_component') . '/templates',
     ),
   );
 }
@@ -140,7 +151,7 @@ function amazon_component_theme() {
 
 /* ----------------------------------------------------------------- */
 /* Helper Functions
-/* ----------------------------------------------------------------- */
+ /* ----------------------------------------------------------------- */
 
 /**
  * Look up an item using database or web.
@@ -202,18 +213,19 @@ function amazon_component_lookup_gallery_from_db($item_ids = array(), $size = NU
     $items = array();
     $i = 0;
 
-    // IF :: Return all image gallery sizes: smallimage, mediumimage, etc.  
+    // IF :: Return all image gallery sizes: smallimage, mediumimage, etc.
     if (!$size) {
       // Query :: ASIN Image Gallery WITHOUT $size
       $query = 'SELECT * FROM {amazon_item_image_gallery} WHERE asin IN (:asins)';
-      $args = array(':asins' => $item_ids,);
+      $args = array(':asins' => $item_ids);
       $options = array('fetch' => PDO::FETCH_ASSOC);
 
       // Result :: Image Gallery Sizes
-      $result = db_query($query,$args,$options);
+      $result = db_query($query, $args, $options);
 
-    // ELSE :: Return single image gallery size.
-    } else {
+      // ELSE :: Return single image gallery size.
+    }
+    else {
       // Query :: ASIN Image Gallery WITH $size
       $query = 'SELECT * FROM {amazon_item_image_gallery} WHERE asin IN (:asins) AND size IN (:size)';
       $args = array(
@@ -223,9 +235,9 @@ function amazon_component_lookup_gallery_from_db($item_ids = array(), $size = NU
       $options = array('fetch' => PDO::FETCH_ASSOC);
 
       // Result :: Image Gallery Sizes
-      $result = db_query($query,$args,$options);
+      $result = db_query($query, $args, $options);
     }
-    
+
     // Loop :: Query Result into $items varkables
     foreach ($result as $image) {
       $items[$image['asin']]['imagesets_gallery'][$image['size']][$image['image_order']] = $image;
@@ -290,18 +302,18 @@ function _amazon_component_batch_lookup_from_web($item_ids = array(), $locale = 
     // Result :: Raw Amazon Product API XML request
     $results = amazon_http_request('ItemLookup', $params, $locale);
 
-    // IF :: Check for errors and set watchdog message 
+    // IF :: Check for errors and set watchdog message
     if (!empty($results->Items->Request->Errors)) {
       _amazon_item_batch_lookup_from_web_errors($results->Items->Request->Errors);
     }
     // IF :: Check Item Existence
     // LOOP :: Convert XML to Gallery(s) + Insert Gallery(s) into Database
     if (!empty($results->Items->Item)) {
-      foreach ($results->Items->Item as $xml) { 
+      foreach ($results->Items->Item as $xml) {
         $item = amazon_component_gallery_clean_xml($xml);
         //amazon_component_gallery_insert($item); /* TODO :: Create function so it works! */
         //$items["{$item['asin']}"] = $item;
-        $items[(string)$xml->ASIN] = $item;
+        $items[(string) $xml->ASIN] = $item;
       }
     }
     return $items;
@@ -344,12 +356,12 @@ function amazon_component_gallery_clean_xml($xml) {
           $k++;
           if (in_array($imageSize, $supported_sizes)) {
             $item['imagesets_gallery'][strtolower($imageSize)][$i] = array(
-              'asin' => (string)$xml->ASIN,
+              'asin' => (string) $xml->ASIN,
               'url' => (string) $imageData->URL,
               'category' => (string) $ImageSet['@attributes']['Category'],
               'height' => intval($imageData->Height),
               'width' => intval($imageData->Width),
-              'size' => (string)strtolower($imageSize),
+              'size' => (string) strtolower($imageSize),
               'image_order' => $i,
             );
           }

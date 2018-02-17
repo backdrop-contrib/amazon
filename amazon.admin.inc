@@ -8,15 +8,17 @@
  * Basic Amazon settings form.
  */
 function amazon_settings_form($form, &$form_state) {
+  $config = config('amazon.settings');
   $cache = amazon_data_cache();
   $options = array();
   foreach ($cache['locales'] as $locale => $data) {
     $options[$locale] = $data['name'];
   }
+  $form['#config'] = 'amazon.settings';
   $form['amazon_default_locale'] = array(
     '#type' => 'select',
     '#title' => t('Default Amazon locale'),
-    '#default_value' => variable_get('amazon_default_locale', 'US'),
+    '#default_value' => $config->get('amazon_default_locale'),
     '#options' => $options,
     '#description' => t('Amazon.com uses separate product databases and Ecommerce features in different locales; pricing and availability information, as well as product categorization, differs from one locale to the next. Be sure to select the default locale your site will be running in.'),
   );
@@ -24,16 +26,16 @@ function amazon_settings_form($form, &$form_state) {
   $form['associate_setting'] = array(
     '#type' => 'fieldset',
     '#title' => t('Amazon referral settings'),
-    '#description' => t('Enter your associate ID for each locale you\'d like to use on your site. Locales left blank will not be available.<br><strong>Note:</strong> By default the Drupal Association\'s ID will populate the field if it\'s available unless you have already specified your own or cleared the value.'),
+    '#description' => t('Enter your associate ID for each locale you\'d like to use on your site. Locales left blank will not be available.<br><strong>Note:</strong> By default the Backdrop Association\'s ID will populate the field if it\'s available unless you have already specified your own or cleared the value.'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
   );
   foreach ($cache['locales'] as $locale => $data) {
-    $form['associate_setting']['amazon_locale_'. $locale .'_associate_id'] = array(
+    $form['associate_setting']['amazon_locale_' . $locale . '_associate_id'] = array(
       '#type' => 'textfield',
       '#title' => t(':locale_name associate ID', array(':locale_name' => $data['name'])),
       '#description' => t('Enter your :locale_name associate ID to receive referral bonuses when shoppers purchase Amazon products via your site.', array(':locale_name' => $data['name'])),
-      '#default_value' => variable_get('amazon_locale_'. $locale .'_associate_id', $data['da_associate_id']),
+      '#default_value' => $config->get('amazon_locale_' . $locale . '_associate_id'),
     );
   }
 
@@ -41,7 +43,7 @@ function amazon_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Amazon AWS Access Key ID'),
     '#description' => t('You must sign up for an Amazon AWS account to use the Product Advertising Service. See !more_info for information and a registration form.', array('!more_info' => l(t('the AWS home page'), 'https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key', array('html' => TRUE)))),
-    '#default_value' => variable_get('amazon_aws_access_key', ''),
+    '#default_value' => $config->get('amazon_aws_access_key'),
     '#required' => TRUE,
   );
 
@@ -49,7 +51,7 @@ function amazon_settings_form($form, &$form_state) {
     '#type' => 'textfield',
     '#title' => t('Amazon AWS Secret Access Key'),
     '#description' => t('You must sign up for an Amazon AWS account to use the Product Advertising Service. See !more_info for information and a registration form.', array('!more_info' => l(t('the AWS home page'), 'https://aws-portal.amazon.com/gp/aws/developer/account/index.html?ie=UTF8&action=access-key', array('html' => TRUE)))),
-    '#default_value' => variable_get('amazon_aws_secret_access_key', ""),
+    '#default_value' => $config->get('amazon_aws_secret_access_key'),
     '#required' => TRUE,
   );
 
@@ -64,14 +66,14 @@ function amazon_settings_form_validate($form, &$form_state) {
   $form_state['values']['amazon_aws_secret_access_key'] = trim($form_state['values']['amazon_aws_secret_access_key']);
 
   // Load locale data
-  require_once(drupal_get_path('module', 'amazon') .'/includes/amazon.locales.inc');
+  require_once(backdrop_get_path('module', 'amazon') . '/includes/amazon.locales.inc');
   $locales = _amazon_load_locales();
 
   $expire = FALSE;
-  // Set up default values for each locale to the Drupal Association ID for that locale (if available)
+  // Set up default values for each locale to the Backdrop Association ID for that locale (if available)
   foreach ($locales as $locale => $data) {
-    $assoc_id = variable_get('amazon_locale_'. $locale .'_associate_id', '');
-    if ($assoc_id != $form_state['values']['amazon_locale_'. $locale .'_associate_id']) {
+    $assoc_id = config_get('amazon.settings', 'amazon_locale_' . $locale . '_associate_id');
+    if ($assoc_id != $form_state['values']['amazon_locale_' . $locale . '_associate_id']) {
       $expire = TRUE;
     }
   }
@@ -85,27 +87,29 @@ function amazon_settings_form_validate($form, &$form_state) {
  * Form to determine how long things get cached.
  */
 function amazon_storage_settings_form($form, &$form_state) {
+  $config = config('amazon.settings');
 
-  $period = drupal_map_assoc(array(3600, 7200, 14400, 21600, 43200, 86400), 'format_interval');
+  $period = backdrop_map_assoc(array(3600, 7200, 14400, 21600, 43200, 86400), 'format_interval');
+  $form['#config'] = 'amazon.settings';
   $form['details']['amazon_refresh_schedule'] = array(
     '#type' => 'select',
     '#title' => t('Amazon refresh schedule'),
     '#description' => t('Cached information on Amazon items must be refreshed regularly to keep pricing and stock information up to date. Cron must be enabled for this function to work properly.'),
-    '#default_value' => variable_get('amazon_refresh_schedule', 86400),
-    '#options' => $period
+    '#default_value' => $config->get('amazon_refresh_schedule'),
+    '#options' => $period,
   );
 
   $form['details']['amazon_refresh_cron_limit'] = array(
     '#type' => 'textfield',
     '#title' => t('Limit'),
     '#description' => t('This will be the number of items processed each time cron runs.'),
-    '#default_value' => variable_get('amazon_refresh_cron_limit', 50),
+    '#default_value' => $config->get('amazon_refresh_cron_limit'),
   );
 
   $form['details']['amazon_core_data'] = array(
     '#type' => 'checkboxes',
     '#title' => t('Store extended product data'),
-    '#default_value' => variable_get('amazon_core_data', array('creators', 'images', 'editorial_reviews')),
+    '#default_value' => $config->get('amazon_core_data'),
     '#options' => array(
       'creators' => t('Book authors, film actors, etc.'),
       'images' => t('Product image links'),
@@ -121,12 +125,13 @@ function amazon_storage_settings_form($form, &$form_state) {
  *
  */
 function amazon_test_form($form, &$form_state) {
+  $config = config('amazon.settings');
   $form = array();
 
   $cache = amazon_data_cache();
   $options = array();
   foreach ($cache['locales'] as $locale => $data) {
-    if (variable_get('amazon_locale_'. $locale .'_associate_id', '')) {
+    if ($config->get('amazon_locale_' . $locale . '_associate_id')) {
       $options[$locale] = $data['name'];
     }
   }
@@ -141,7 +146,7 @@ function amazon_test_form($form, &$form_state) {
     '#type' => 'select',
     '#title' => t('Locale'),
     '#options' => $options,
-    '#default_value' => variable_get('amazon_default_locale', 'US'),
+    '#default_value' => $config->get('amazon_default_locale'),
   );
   $form['submit'] = array(
     '#type' => 'submit',
@@ -172,6 +177,10 @@ function amazon_test_form($form, &$form_state) {
   return $form;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function amazon_test_form_validate($form, &$form_state) {
   // Normalize input and look up
   $asin = amazon_convert_to_asin($form_state['values']['asin']);
@@ -184,6 +193,10 @@ function amazon_test_form_validate($form, &$form_state) {
   }
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function amazon_test_form_submit($form, &$form_state) {
   $item = $form_state['amazon_item'];
   amazon_item_delete($item['asin']);

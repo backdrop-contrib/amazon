@@ -17,10 +17,10 @@ function amazon_similar_amazon_response_groups_alter(&$groups) {
  */
 function amazon_similar_amazon_item_clean_xml(&$item, $xml) {
   if (isset($xml->SimilarProducts->SimilarProduct)) {
-    foreach($xml->SimilarProducts->SimilarProduct as $data) {
+    foreach ($xml->SimilarProducts->SimilarProduct as $data) {
       $version = array();
-      $version['asin'] = (string)$data->ASIN;
-      $version['title'] = (string)$data->Title;
+      $version['asin'] = (string) $data->ASIN;
+      $version['title'] = (string) $data->Title;
       $item['similarproducts'][] = $version;
     }
   }
@@ -57,7 +57,7 @@ function amazon_similar_amazon_item_insert($item) {
   foreach ($item['similarproducts'] as $version) {
     $version['item'] = $item['asin'];
     $version['delta'] = $delta;
-    drupal_write_record('amazon_similar', $version);
+    backdrop_write_record('amazon_similar', $version);
     $delta++;
   }
 }

@@ -17,7 +17,7 @@
 
 
 /**
- * Implementation of hook_views_plugins
+ * Implements hook_views_plugins().
  */
 function amazon_views_plugins() {
   return array(
@@ -29,7 +29,7 @@ function amazon_views_plugins() {
         'handler' => 'amazon_views_plugin_row_amazon_view',
         'theme' => 'amazon_views_view_row_item',
         'theme file' => 'amazon.theme.inc',
-        'theme path' => drupal_get_path('module', 'amazon'),
+        'theme path' => backdrop_get_path('module', 'amazon'),
         'base' => array('amazon_item'),
         'uses options' => TRUE,
         'type' => 'normal',
@@ -40,12 +40,12 @@ function amazon_views_plugins() {
 }
 
 /**
- * Implementation of hook_views_handlers()
+ * Implements hook_views_handlers().
  */
 function amazon_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'amazon') . '/includes',
+      'path' => backdrop_get_path('module', 'amazon') . '/includes',
     ),
     'handlers' => array(
       'views_handler_field_amazon_image' => array(
@@ -75,6 +75,10 @@ function amazon_views_handlers() {
 
 
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function amazon_views_data() {
   // Basic table information.
 
@@ -102,12 +106,12 @@ function amazon_views_data() {
   $data['amazon_item']['title'] = array(
     'title' => t('Title'), // The item it appears as on the UI,
     'help' => t('The name of the product.'), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => 'title', // the real field
       'handler' => 'views_handler_field_amazon_title',
       'click sortable' => TRUE,
-     ),
+    ),
     'sort' => array('handler' => 'views_handler_sort'),
   );
 
@@ -115,12 +119,12 @@ function amazon_views_data() {
   $data['amazon_item']['detailpageurl'] = array(
     'title' => t('Detail page URL'), // The item it appears as on the UI,
     'help' => t("The URL of the product's page on Amazon.com."), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => 'detailpageurl', // the real field
       'handler' => 'views_handler_field',
       'click sortable' => FALSE,
-     ),
+    ),
   );
 
   _amazon_make_simple_number_field($data, 'amazon_item', 'salesrank', 'Sales rank', 'The current sales ranking of the product on Amazon.com.');
@@ -166,12 +170,12 @@ function amazon_views_data() {
   $data['amazon_item_participant']['participants_all'] = array(
     'title' => t('All participants'), // The item it appears as on the UI,
     'help' => t("The names of all individuals who participated in the creation of a product, grouped as a single field."), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => 'participant', // the real field
       'handler' => 'views_handler_field_amazon_participant',
       'click sortable' => FALSE,
-     ),
+    ),
   );
 
 
@@ -191,7 +195,7 @@ function amazon_views_data() {
   $data['amazon_item_image']['product_image'] = array(
     'title' => t('Product image'), // The item it appears as on the UI,
     'help' => t("An image of the Amazon product."), // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => 'url', // the real field
       'handler' => 'views_handler_field_amazon_image',
@@ -225,12 +229,12 @@ function _amazon_make_simple_boolean_field(&$data, $table, $column, $title, $hel
   $data[$table][$column] = array(
     'title' => $title, // The item it appears as on the UI,
     'help' => $help, // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => $column, // the real field
       'handler' => 'views_handler_field_boolean',
       'click sortable' => TRUE,
-     ),
+    ),
     'argument' => array('handler' => 'views_handler_argument_numeric'),
     'filter' => array('handler' => 'views_handler_filter_boolean_operator'),
     'sort' => array('handler' => 'views_handler_sort'),
@@ -241,12 +245,12 @@ function _amazon_make_simple_text_field(&$data, $table, $column, $title, $help =
   $data[$table][$column] = array(
     'title' => $title, // The item it appears as on the UI,
     'help' => $help, // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => $column, // the real field
       'handler' => 'views_handler_field',
       'click sortable' => TRUE,
-     ),
+    ),
     'argument' => array('handler' => 'views_handler_argument_string'),
     'filter' => array('handler' => 'views_handler_filter_string'),
     'sort' => array('handler' => 'views_handler_sort'),
@@ -257,10 +261,10 @@ function _amazon_make_simple_markup_field(&$data, $table, $column, $title, $help
   $data[$table][$column] = array(
     'title' => $title, // The item it appears as on the UI,
     'help' => $help, // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'handler' => 'views_handler_field_amazon_xss',
-     ),
+    ),
   );
 }
 
@@ -268,14 +272,14 @@ function _amazon_make_simple_date_field(&$data, $table, $column, $title, $help =
   $data[$table][$column] = array(
     'title' => $title, // The item it appears as on the UI,
     'help' => $help, // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => $column, // the real field
       'handler' => 'views_handler_field_amazon_date',
       'click sortable' => TRUE,
-     ),
+    ),
     'filter' => array('handler' => 'views_handler_filter_string_compare'),
-     // Amazon date is sortable, so we can just use the standard handler.
+    // Amazon date is sortable, so we can just use the standard handler.
     'sort' => array('handler' => 'views_handler_sort'),
   );
 }
@@ -284,12 +288,12 @@ function _amazon_make_simple_number_field(&$data, $table, $column, $title, $help
   $data[$table][$column] = array(
     'title' => $title, // The item it appears as on the UI,
     'help' => $help, // The help that appears on the UI,
-     // Information for displaying a title as a field
+    // Information for displaying a title as a field
     'field' => array(
       'field' => $column, // the real field
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
-     ),
+    ),
     'filter' => array('handler' => 'views_handler_filter_numeric'),
     'sort' => array('handler' => 'views_handler_sort'),
   );

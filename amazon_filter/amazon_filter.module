@@ -39,7 +39,7 @@ function amazon_filter_info() {
   $filters['amazon'] = array(
     'title' => t('Amazon filter'),
     'description' => t('Provides access to many types of Amazon data. Simplest usage: [amazon:ASIN:inline], for example [amazon:0596515804:inline].'),
-    'process callback'  => '_amazon_filter_process_text',
+    'process callback' => '_amazon_filter_process_text',
     'tips callback' => '_amazon_filter_tips',
   );
   return $filters;
@@ -71,16 +71,16 @@ function _amazon_filter_process_text($text) {
         switch ($action) {
           case "":
           case 'inline':
-            $replace[] = theme('amazon_inline_item', array('item' =>$item));
+            $replace[] = theme('amazon_inline_item', array('item' => $item));
             break;
 
-          // Full is a synonym of 'details'.
+            // Full is a synonym of 'details'.
           case 'full':
           case 'details':
             $replace[] = theme('amazon_item', array('item' => $item, 'style' => 'details'));
             break;
 
-          // Handle themeable cases, like thumbnail.
+            // Handle themeable cases, like thumbnail.
           case 'thumbnail':
             $replace[] = theme('amazon_item__thumbnail', array('item' => $item));
             break;
@@ -92,7 +92,7 @@ function _amazon_filter_process_text($text) {
         }
       }
       else {
- // error case
+        // error case
         $replace[] = "<!-- The Amazon product '$asin' could not be found.-->";
       }
     }

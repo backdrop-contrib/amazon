@@ -5,8 +5,8 @@
  * Defines a field type for referencing an Amazon product.
  */
 
- /**
- * Implementation of hook_menu().
+/**
+ * Implements hook_menu().
  */
 function asin_menu() {
   $items = array();
@@ -14,14 +14,14 @@ function asin_menu() {
     'page callback' => 'asin_autocomplete_callback',
     'page arguments' => array(2, 3, 4),
     'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK
+    'type' => MENU_CALLBACK,
   );
 
   return $items;
 }
 
 /**
- * Implementation of hook_field_info().
+ * Implements hook_field_info().
  */
 function asin_field_info() {
   return array(
@@ -80,7 +80,7 @@ function _asin_trim_items(&$items) {
 }
 
 /**
- * Implements of hook_field_is_empty().
+ * Implements hook_field_is_empty().
  */
 function asin_field_is_empty($item, $field) {
   if (empty($item['asin'])) {
@@ -90,7 +90,7 @@ function asin_field_is_empty($item, $field) {
 }
 
 /**
- * Implementation of hook_field_formatter_info().
+ * Implements hook_field_formatter_info().
  */
 function asin_field_formatter_info() {
   return array(
@@ -154,7 +154,8 @@ function asin_field_formatter_view($entity_type, $entity, $field, $instance, $la
     $locale = $instance['widget']['settings']['widget_settings']['locale'];
   }
   else {
-    $locale = variable_get('amazon_default_locale');
+    // TODO This variable was probably removed in Backdrop without replacement.
+    $locale = config_get('amazon.settings', 'amazon_default_locale');
   }
 
   foreach ($items as $delta => $value) {
@@ -189,7 +190,7 @@ function asin_field_formatter_view($entity_type, $entity, $field, $instance, $la
             '#item' => $item,
           );
 
-          $element[$delta] = array('#markup' => drupal_render($elements));
+          $element[$delta] = array('#markup' => backdrop_render($elements));
 
         }
       }
@@ -199,7 +200,7 @@ function asin_field_formatter_view($entity_type, $entity, $field, $instance, $la
 }
 
 /**
- * Implementation of hook_field_widget_info().
+ * Implements hook_field_widget_info().
  *
  */
 function asin_field_widget_info() {
@@ -225,7 +226,8 @@ function asin_field_widget_settings_form($field, $instance) {
   $cache = amazon_data_cache();
   $locale_options = array('' => '-- Select --');
   foreach ($cache['locales'] as $locale => $data) {
-    if (variable_get('amazon_locale_' . $locale . '_associate_id', '')) {
+    // TODO This variable was probably removed in Backdrop without replacement.
+    if (config_get('amazon.settings', 'amazon_locale_' . $locale . '_associate_id', '')) {
       $locale_options[$locale] = $data['name'];
     }
   }
@@ -334,7 +336,7 @@ function asin_field_widget_element_validate($element, &$form_state) {
         );
       }
       else {
-        $item['asin'] = (string)key($results);
+        $item['asin'] = (string) key($results);
       }
     }
   }
@@ -359,20 +361,21 @@ function asin_autocomplete_callback($entity_type, $bundle, $field_name, $string 
     $locale = $instance['widget']['settings']['widget_settings']['locale'];
   }
   else {
-    $locale = variable_get('amazon_default_locale', 'US');
+    // TODO This variable was probably removed in Backdrop without replacement.
+    $locale = config_get('amazon.settings', 'amazon_default_locale', 'US');
   }
 
   $results = amazon_http_request('ItemSearch', $parameters, $locale);
   // Process the results.
-  foreach($results->Items->Item as $xml) {
+  foreach ($results->Items->Item as $xml) {
     $items[(string) $xml->ASIN] = (string) $xml->ItemAttributes->Title . ' (' . $xml->ItemAttributes->ProductGroup . ')';
   }
   // Create our response.
   foreach ($items as $asin => $title) {
     // Add a class wrapper for a few required CSS overrides.
-    $matches[$title . ' [asin:' . $asin . ']'] = '<div class="reference-autocomplete">'. $title . '</div>';
+    $matches[$title . ' [asin:' . $asin . ']'] = '<div class="reference-autocomplete">' . $title . '</div>';
   }
-  drupal_json_output($matches);
+  backdrop_json_output($matches);
 }
 
 /**
@@ -420,7 +423,7 @@ function asin_field_views_data($field) {
 }
 
 /**
- * Implementation of hook_feeds_node_processor_targets_alter().
+ * Implements hook_feeds_node_processor_targets_alter().
  */
 function asin_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
   foreach (field_info_instances($entity_type, $bundle_name) as $name => $instance) {
@@ -486,6 +489,16 @@ function asin_devel_generate($object, $field, $instance, $bundle) {
 }
 
 /**
+ * Implements hook_config_info().
+ */
+function asin_config_info() {
+  $prefixes['asin.settings'] = array(
+    'label' => t('Module name settings'),
+    'group' => t('Configuration'),
+  );
+}
+
+/**
  * Utility function that actually provides the values for asin_devel_generate().
  *
  * You can change the SearchIndex and Keywords used for the search by changing
@@ -493,20 +506,24 @@ function asin_devel_generate($object, $field, $instance, $bundle) {
  * amazon_devel_generate_keywords.
  */
 function _asin_devel_generate($object, $field, $instance, $bundle) {
-  $search_index = variable_get('amazon_devel_generate_search_index', 'All');
-  $keywords_picker = explode(',', variable_get('asin_devel_generate_keywords', 'computer'));
+  $config = config('asin.settings');
+  // TODO This variable was probably removed in Backdrop without replacement.
+  $search_index = config_get('amazon.settings', 'amazon_devel_generate_search_index', 'All');
+  $keywords_picker = explode(',', $config->get('asin_devel_generate_keywords'));
   $keywords_picker = array_flip($keywords_picker);
 
-  $asins = variable_get('amazon_devel_generate_asins', array());
-  $amazon_item_page = variable_get('amazon_devel_generate_item_page', 1);
-  $locale = variable_get('amazon_default_locale', 'US');
+  $asins = $config->get('amazon_devel_generate_asins');
+  // TODO This variable was probably removed in Backdrop without replacement.
+  $amazon_item_page = config_get('amazon.settings', 'amazon_devel_generate_item_page', 1);
+  // TODO This variable was probably removed in Backdrop without replacement.
+  $locale = config_get('amazon.settings', 'amazon_default_locale', 'US');
 
   if (empty($asins)) {
     $parameters = array(
       'ResponseGroup' => 'ItemAttributes,EditorialReview,Images',
       'SearchIndex' => $search_index,
       'Keywords' => array_rand($keywords_picker, 1),
-      'ItemPage' => $amazon_item_page % 10,   // 10 is now max pages from amazon
+      'ItemPage' => $amazon_item_page % 10, // 10 is now max pages from amazon
     );
     $amazon_item_page++;
 
@@ -522,8 +539,9 @@ function _asin_devel_generate($object, $field, $instance, $bundle) {
   //$field['asin'] = array_shift($asins);
   $asin = array_shift($asins);
   $field['asin'] = $asin;
-  variable_set('amazon_devel_generate_asins', $asins);
-  variable_set('amazon_devel_generate_item_page', $amazon_item_page);
+  config_set('asin.settings', 'amazon_devel_generate_asins', $asins);
+  // TODO This variable was probably removed in Backdrop without replacement.
+  config_set('amazon.settings', 'amazon_devel_generate_item_page', $amazon_item_page);
   return $field;
 }
 
@@ -531,6 +549,7 @@ function _asin_devel_generate($object, $field, $instance, $bundle) {
  * Allow selection of the SearchIndex and Keywords to be used
  */
 function asin_form_devel_generate_content_form_alter(&$form, $form_state) {
+  $config = config('asin.settings');
   $form['asin_options'] = array(
     '#type' => 'fieldset',
     '#title' => t('Amazon ASIN Field Configuration'),
@@ -540,22 +559,26 @@ function asin_form_devel_generate_content_form_alter(&$form, $form_state) {
   $form['asin_options']['asin_devel_generate_search_index'] = array(
     '#type' => 'select',
     '#title' => t('Amazon SearchIndex'),
-    '#options' => drupal_map_assoc(array('All', 'Books', 'DVD', 'Electronics', 'Kitchen', 'Software')),
-    '#default_value' => variable_get('asin_devel_generate_search_index', 'All'),
+    '#options' => backdrop_map_assoc(array('All', 'Books', 'DVD', 'Electronics', 'Kitchen', 'Software')),
+    '#default_value' => $config->get('asin_devel_generate_search_index'),
   );
   $form['asin_options']['asin_devel_generate_keywords'] = array(
     '#type' => 'textfield',
     '#title' => t('Amazon.com search keywords for ASIN fields'),
     '#description' => t('Comma-separated list of keywords to be used in search to populate Amazon module asin fields'),
-    '#default_value' => variable_get('asin_devel_generate_keywords', 'computers'),
+    '#default_value' => $config->get('asin_devel_generate_keywords'),
   );
   $form['submit']['#weight'] = 99;
   array_unshift($form['#submit'], 'asin_devel_generate_set_values');
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function asin_devel_generate_set_values($form, &$form_state) {
-  variable_set('asin_devel_generate_keywords', $form_state['values']['asin_devel_generate_keywords']);
-  variable_set('asin_devel_generate_search_index', $form_state['values']['asin_devel_generate_search_index']);
+  config_set('asin.settings', 'asin_devel_generate_keywords', $form_state['values']['asin_devel_generate_keywords']);
+  config_set('asin.settings', 'asin_devel_generate_search_index', $form_state['values']['asin_devel_generate_search_index']);
 }
 
 /**
@@ -571,9 +594,10 @@ function asin_preprocess_field(&$variables, $hook) {
 
     if (isset($field_instance['widget']['settings']['widget_settings']['locale'])) {
       $locale = $field_instance['widget']['settings']['widget_settings']['locale'];
-      }
+    }
     else {
-      $locale = variable_get('amazon_default_locale');
+      // TODO This variable was probably removed in Backdrop without replacement.
+      $locale = config_get('amazon.settings', 'amazon_default_locale');
     }
     $variables['classes_array'][] = 'locale-' . strtolower($locale);
   }

@@ -4,12 +4,8 @@ description = Provides an API for searching Amazon product information, and inte
 package = Amazon
 dependencies[] = amazon
 dependencies[] = search
-core = 7.x
+backdrop = 1.x
+type = module
 php = 5.2
 configure = admin/config/search/settings
-; Information added by drupal.org packaging script on 2013-09-30
-version = "7.x-1.1+19-dev"
-core = "7.x"
-project = "amazon"
-datestamp = "1380553723"
 

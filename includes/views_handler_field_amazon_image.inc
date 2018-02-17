@@ -25,7 +25,9 @@ class views_handler_field_amazon_image extends views_handler_field {
     $this->additional_fields['height'] = 'height';
     $this->additional_fields['width'] = 'width';
     $this->additional_fields['detailpageurl'] = array(
-      'table' => 'amazon_item', 'field' => 'detailpageurl', 'value' => 'amazon_item_detailpageurl'
+      'table' => 'amazon_item',
+      'field' => 'detailpageurl',
+      'value' => 'amazon_item_detailpageurl',
     );
     $this->additional_fields['asin'] = 'asin';
     $this->additional_fields['url'] = 'url';
@@ -35,7 +37,11 @@ class views_handler_field_amazon_image extends views_handler_field {
     if (empty($this->table_alias)) {
       $join_extra = array();
       if (!empty($this->options['image_size'])) {
-        $join_extra[] = array('field' => 'size', 'value' => $this->options['image_size'], 'numeric' => FALSE);
+        $join_extra[] = array(
+          'field' => 'size',
+          'value' => $this->options['image_size'],
+          'numeric' => FALSE,
+        );
       }
 
       $join = new views_join();

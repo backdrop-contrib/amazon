@@ -14,7 +14,7 @@
  */
 
 /**
- * Implementation of hook_views_data()
+ * Implements hook_views_data().
  */
 function amazon_media_views_data() {
   // Define the base group of this table. Fields that don't

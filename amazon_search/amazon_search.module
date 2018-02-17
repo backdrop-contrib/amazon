@@ -7,15 +7,15 @@
  */
 
 /**
- * Implements hook_permission.
+ * Implements hook_permission().
  * @return unknown_type
  */
 function amazon_search_permission() {
   return array(
-    'access amazon search' =>  array(
+    'access amazon search' => array(
       'title' => t('Access Amazon Search'),
       'description' => t('Perform searches on Amazon.'),
-  ),
+    ),
   );
 }
 
@@ -36,18 +36,18 @@ function amazon_search_search_info() {
   );
 }
 /**
- * Implements hook_search_execute(). Implements remote Amazon searching.
+ * Implements hook_search_execute(). Implements remote Amazon searching().
  */
 function amazon_search_search_execute($keys = NULL, $conditions = NULL) {
   $products = array();
   $items = amazon_search_simple_search($keys);
   foreach ($items as $item) {
     $products[] = array(
-            'title' => '',
-            'link' => check_url($item['detailpageurl']),
-            'type' => check_plain($item['productgroup']),
-            'snippet' => theme('amazon_item', array('item' => $item, 'style' => 'details')),
-            'item' => $item,
+      'title' => '',
+      'link' => check_url($item['detailpageurl']),
+      'type' => check_plain($item['productgroup']),
+      'snippet' => theme('amazon_item', array('item' => $item, 'style' => 'details')),
+      'item' => $item,
     );
   }
   return $products;
@@ -69,7 +69,7 @@ function amazon_search_simple_search($keywords = '', $parameters = array(), $loc
     'SearchIndex' => 'All',
   );
   $parameters['Keywords'] = $keywords;
-  drupal_alter('amazon_search_parameters', $parameters);
+  backdrop_alter('amazon_search_parameters', $parameters);
 
   $items = array();
   $results = amazon_http_request('ItemSearch', $parameters, $locale);

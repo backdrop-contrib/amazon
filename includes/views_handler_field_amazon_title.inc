@@ -38,7 +38,7 @@ class views_handler_field_amazon_title extends views_handler_field {
   }
 
   function render($values) {
-		$value = $this->get_value($values);
+    $value = $this->get_value($values);
     return $this->render_link($this->sanitize_value($value, 'xss'), $values);
   }
 

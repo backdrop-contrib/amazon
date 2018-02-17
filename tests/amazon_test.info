@@ -1,6 +1,8 @@
 name = Amazon Tests
 description = Helper module to run tests
-core = 7.x
+backdrop = 1.x
+type = module
 package = Amazon
 dependencies[] = amazon
 hidden = 1
+

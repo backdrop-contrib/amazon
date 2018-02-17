@@ -1,0 +1,16 @@
+{
+    "_config_name": "amazon.settings",
+    "amazon_default_locale": "US",
+    "amazon_locale_US_associate_id": "",
+    "amazon_aws_access_key": "",
+    "amazon_aws_secret_access_key": "\"\"",
+    "amazon_refresh_schedule": "86400",
+    "amazon_refresh_cron_limit": "50",
+    "amazon_core_data": [
+        "creators", 
+        "images", 
+        "editorial_reviews"
+    ],
+    "amazon_locale": "US",
+    "amazon_custom_associate_id": ""
+}

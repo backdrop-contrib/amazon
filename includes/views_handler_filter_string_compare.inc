@@ -198,7 +198,7 @@ class views_handler_filter_string_compare extends views_handler_filter {
       // Ensure there is something in the 'value'.
       $form['value'] = array(
         '#type' => 'value',
-        '#value' => NULL
+        '#value' => NULL,
       );
     }
   }

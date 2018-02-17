@@ -18,11 +18,11 @@ function amazon_versions_amazon_response_groups_alter(&$groups) {
  */
 function amazon_versions_amazon_item_clean_xml(&$item, $xml) {
   if (isset($xml->AlternateVersions->AlternateVersion)) {
-    foreach($xml->AlternateVersions->AlternateVersion as $data) {
+    foreach ($xml->AlternateVersions->AlternateVersion as $data) {
       $version = array();
-      $version['asin'] = (string)$data->ASIN;
-      $version['title'] = (string)$data->Title;
-      $version['binding'] = (string)$data->Binding;
+      $version['asin'] = (string) $data->ASIN;
+      $version['title'] = (string) $data->Title;
+      $version['binding'] = (string) $data->Binding;
       $item['alternateversions'][] = $version;
     }
   }
@@ -59,7 +59,7 @@ function amazon_versions_amazon_item_insert($item) {
   foreach ($item['alternateversions'] as $version) {
     $version['item'] = $item['asin'];
     $version['delta'] = $delta;
-    drupal_write_record('amazon_versions', $version);
+    backdrop_write_record('amazon_versions', $version);
     $delta++;
   }
 }

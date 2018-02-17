@@ -12,34 +12,34 @@ function amazon_versions_schema() {
   $schema['amazon_versions'] = array(
     'fields' => array(
       'asin' => array(
-        'type'     => 'varchar',
-        'length'   => 64,
+        'type' => 'varchar',
+        'length' => 64,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'item' => array(
-        'type'     => 'varchar',
-        'length'   => 64,
+        'type' => 'varchar',
+        'length' => 64,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'title' => array(
-        'type'     => 'varchar',
-        'length'   => 255,
+        'type' => 'varchar',
+        'length' => 255,
         'not null' => TRUE,
-        'default'  => '',
+        'default' => '',
       ),
       'binding' => array(
-        'type'     => 'varchar',
-        'length'   => 64,
+        'type' => 'varchar',
+        'length' => 64,
         'not null' => FALSE,
-        'default'  => NULL,
+        'default' => NULL,
       ),
       'delta' => array(
-        'type'     => 'int',
+        'type' => 'int',
         'not null' => TRUE,
         'unsigned' => TRUE,
-        'default'  => 0
+        'default' => 0,
       ),
     ),
     'primary key' => array('asin', 'item'),
