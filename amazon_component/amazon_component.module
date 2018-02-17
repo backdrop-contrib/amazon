@@ -28,7 +28,7 @@ function amazon_component_block_info() {
 /**
  * Implements hook_block_view().
  */
-function amazon_component_block_view($delta) {
+function amazon_component_block_view($delta = '', $settings = array(), $contexts = array()) {
   $block = array();
   switch ($delta) {
     case 'amazon_component_gallery':
@@ -57,7 +57,7 @@ function amazon_component_block_view($delta) {
  */
 function amazon_component_config_info() {
   $prefixes['amazon_component.settings'] = array(
-    'label' => t('Module name settings'),
+    'label' => t('Amazon Component settings'),
     'group' => t('Configuration'),
   );
 }
@@ -65,16 +65,16 @@ function amazon_component_config_info() {
 /**
  * Implements hook_block_configure().
  */
-function amazon_component_block_configure($delta) {
+function amazon_component_block_configure($delta = '', $settings = array()) {
   $config = config('amazon_component.settings');
   switch ($delta) {
-    case 'amazon_gallery':
+    case 'amazon_component_gallery':
       $form = array();
       $form['amazon_store_search_block_keywords_width'] = array(
         '#type' => 'textfield',
         '#title' => t('Maximum Amount of Gallery Images'),
         '#size' => 5,
-        '#default_value' => $config->get("amazon_component['gallery']"),
+        '#default_value' => $config->get("amazon_component_gallery"),
       );
       return $form;
     case 'amazon_component_cart':
@@ -83,7 +83,7 @@ function amazon_component_block_configure($delta) {
         '#type' => 'textfield',
         '#title' => t('Style'),
         '#size' => 5,
-        '#default_value' => $config->get("amazon_component['cart']"),
+        '#default_value' => $config->get("amazon_component_cart"),
       );
       return $form;
     case 'amazon_component_reviews':
@@ -92,7 +92,7 @@ function amazon_component_block_configure($delta) {
         '#type' => 'textfield',
         '#title' => t('Style'),
         '#size' => 15,
-        '#default_value' => $config->get("amazon_component['reviews_style']"),
+        '#default_value' => $config->get("amazon_component_reviews_style"),
       );
       return $form;
   }
@@ -101,7 +101,7 @@ function amazon_component_block_configure($delta) {
 /**
  * Implements hook_block_save().
  */
-function amazon_component_block_save($delta, $edit) {
+function amazon_component_block_save($delta, &$edit = array()) {
   switch ($delta) {
     case 'amazon_gallery':
       config_set('amazon_component.settings', "amazon_component_gallery", $edit["amazon_component_gallery"]);

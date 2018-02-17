@@ -53,7 +53,7 @@ function template_preprocess_amazon_component_reviews(&$variables) {
 
   // IF :: the block is being rendered on Amazon Product Node type or Amazon Store Module path proceed.
   // TODO This variable was probably removed in Backdrop without replacement.
-  if ($currentAlias[0] == 'product' || $currentAlias[0] == variable_get('amazon_store_path')) {
+  if ($currentAlias[0] == 'product' || $currentAlias[0] == config_get('amazon.settings', 'amazon_store_path')) {
     $reviews[$currentAlias[1]] = _amazon_component_fetch_reviews($currentAlias[1]);
     // Foreach :: Review
     foreach ($reviews[$currentAlias[1]] as $key => $review) {
@@ -133,7 +133,7 @@ function _amazon_component_process_reviews($asin) {
  * Pathauto: product/[node:field_product_asin]/[node:nid]
  *
  * Module: Amazon Store
- * Pathauto: variable_get('amazon_store_path')/[node:field_product_asin]/[node:nid]
+ * Pathauto: config_get('amazon.settings', 'amazon_store_path')/[node:field_product_asin]/[node:nid]
  */
 
 function template_preprocess_amazon_gallery(&$variables) {
@@ -146,7 +146,7 @@ function template_preprocess_amazon_gallery(&$variables) {
   // and the second position is an Amazon Product ASIN.
   // Depending on future Open Source releases we may switch it to scan the URL array for an ASIN in any position.
   // TODO This variable was probably removed in Backdrop without replacement.
-  if ($currentAlias[0] == 'product' || $currentAlias[0] == variable_get('amazon_store_path')) {
+  if ($currentAlias[0] == 'product' || $currentAlias[0] == config_get('amazon.settings', 'amazon_store_path')) {
 
     $result = amazon_component_gallery_lookup($currentAlias[1]);
     // Create gallery variables: $smallimagegallery, $mediumimagegallery, etc.
