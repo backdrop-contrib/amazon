@@ -1,5 +1,5 @@
 
-Drupal.behaviors.amazon = {
+Backdrop.behaviors.amazon = {
     attach: {
 
   jQuery(document).ready(function(){ jQuery("#edit-amazon-associate-setting").bind("change", function() {

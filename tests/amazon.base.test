@@ -4,7 +4,7 @@
  * @file
  * Base tests for Amazon module.
  */
-class AmazonBaseTest extends DrupalWebTestCase {
+class AmazonBaseTest extends BackdropWebTestCase {
   protected $admin_user;
 
   protected function setUp($modules = array()) {
@@ -50,7 +50,7 @@ class AmazonBaseTest extends DrupalWebTestCase {
    *   An XPath expression.
    * @param array $arguments
    *   (optional) An associative array of XPath replacement tokens to pass to
-   *   DrupalWebTestCase::buildXPathQuery().
+   *   BackdropWebTestCase::buildXPathQuery().
    * @param       $message
    *   The message to display along with the assertion.
    * @param       $group
